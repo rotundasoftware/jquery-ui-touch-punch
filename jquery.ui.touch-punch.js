@@ -35,11 +35,20 @@
       return;
     }
 
-    event.preventDefault();
-
     var touch = event.originalEvent.changedTouches[0],
         simulatedEvent = document.createEvent('MouseEvents');
-    
+
+    // Allow focus on editable elements to prevent all kinds of errors
+    var touchedEl = $(touch.target);
+    var formControlTouched = touchedEl.is('input') || touchedEl.is('textarea') || touchedEl.is( 'select' );
+    var editableElementTouched = formControlTouched || touchedEl.closest( 'div[contenteditable="true"]' ).length > 0;
+
+    if ( editableElementTouched ) {
+        event.stopPropagation();
+    } else {
+        event.preventDefault();
+    }
+
     // Initialize the simulated mouse event using the touch event's coordinates
     simulatedEvent.initMouseEvent(
       simulatedType,    // type
